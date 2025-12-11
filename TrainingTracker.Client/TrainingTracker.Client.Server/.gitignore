@@ -1,0 +1,27 @@
+# .gitignore for TrainingTracker.Client.Server project
+
+# Build outputs
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Publish
+publish/
+
+# Secrets
+secrets.json
+*.pfx
+
+# Logs
+*.log
+
+# Environment
+.env
+
+# If the project contains a client subfolder
+../trainingtracker.client.client/node_modules/
+../trainingtracker.client.client/dist/

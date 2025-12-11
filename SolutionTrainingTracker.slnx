@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="TrainingTracker.Client/trainingtracker.client.client/trainingtracker.client.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="TrainingTracker.Client/TrainingTracker.Client.Server/TrainingTracker.Client.Server.csproj" />
+</Solution>
