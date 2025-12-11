@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TrainingTracker.Client.Server.Models; // Będziemy tu importować Twoje modele
 
-namespace TrainingTracker.Api.Data
+namespace TrainingTracker.Client.Server.Data
 {
     public class ApplicationDbContext : DbContext
     {

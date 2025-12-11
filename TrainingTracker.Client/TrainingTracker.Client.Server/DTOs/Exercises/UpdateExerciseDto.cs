@@ -1,0 +1,10 @@
+﻿namespace TrainingTracker.Client.Server.DTOs.Exercises
+{
+    public class UpdateExerciseDto
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public bool IsGlobal { get; set; }
+        public int CategoryId { get; set; }
+    }
+}

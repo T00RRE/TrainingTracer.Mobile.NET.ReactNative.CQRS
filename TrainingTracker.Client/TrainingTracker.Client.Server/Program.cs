@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using TrainingTracker.Api.Data; // Importujemy Twój DbContext
+using TrainingTracker.Client.Server.Data;
 using MediatR;
 using System.Reflection; // Wymagane dla MediatR
+using FluentValidation;
+using FluentValidation.AspNetCore;
 
 namespace TrainingTracker.Client.Server // TUTAJ U¯YWAMY POPRAWNEJ NAZWY PRZESTRZENI NAZW
 {
@@ -15,11 +17,12 @@ namespace TrainingTracker.Client.Server // TUTAJ U¯YWAMY POPRAWNEJ NAZWY PRZESTR
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
-            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+            builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 
 
             builder.Services.AddControllers();
-
+            builder.Services.AddFluentValidationAutoValidation();
+            builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
