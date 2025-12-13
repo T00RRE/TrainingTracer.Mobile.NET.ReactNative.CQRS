@@ -44,7 +44,6 @@ namespace TrainingTracker.Client.Server.Features.Categories
                 .FirstAsync(c => c.Id == request.Id, cancellationToken);
 
             _context.ExerciseCategories.Remove(categoryToDelete);
-            // CASCADE DELETE: Usunięcie kategorii usunie również powiązane ćwiczenia.
             await _context.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;

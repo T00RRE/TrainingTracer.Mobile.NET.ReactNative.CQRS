@@ -17,7 +17,7 @@ namespace TrainingTracker.Client.Server.Controllers
         }
 
         // C - CREATE (Dodaj serię)
-        [HttpPost] // POST /api/ExerciseSets
+        [HttpPost] // 
         [ProducesResponseType(typeof(int), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddSet([FromBody] AddSetDto dto)

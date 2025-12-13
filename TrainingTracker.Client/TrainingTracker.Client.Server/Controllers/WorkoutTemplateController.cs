@@ -42,13 +42,9 @@ namespace TrainingTracker.Client.Server.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateTemplate(int id, [FromBody] UpdateTemplateDto templateDto)
         {
-            // 1. Tworzymy Command z ID i danymi
             var command = new UpdateTemplateCommand(id, templateDto);
-
-            // 2. Wysyłamy Command do MediatR
             await _mediator.Send(command);
 
-            // 3. Zwracamy status 204 No Content
             return NoContent();
         }
         [HttpDelete("{id}")]

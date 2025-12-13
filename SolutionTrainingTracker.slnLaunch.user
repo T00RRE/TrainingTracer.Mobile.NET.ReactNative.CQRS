@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "Nowy Profil",
+    "Projects": [
+      {
+        "Path": "TrainingTracker.Client\\trainingtracker.client.client\\trainingtracker.client.client.esproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "TrainingTracker.Client\\TrainingTracker.Client.Server\\TrainingTracker.Client.Server.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

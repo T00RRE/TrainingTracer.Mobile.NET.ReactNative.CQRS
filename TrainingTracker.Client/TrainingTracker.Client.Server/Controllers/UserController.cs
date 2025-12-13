@@ -24,7 +24,6 @@ namespace TrainingTracker.Client.Server.Controllers
             var command = new RegisterUserCommand(userDto);
             var newId = await _mediator.Send(command);
 
-            // Zwracamy status 201 Created
             return Created(string.Empty, newId);
         }
 

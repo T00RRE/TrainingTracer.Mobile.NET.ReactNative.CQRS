@@ -8,7 +8,6 @@
         public string PasswordHash { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        // Relacje (Nawigacja)
         public ICollection<WorkoutTemplate> Templates { get; set; }
         public ICollection<TrainingSession> Sessions { get; set; }
         public UserSettings Settings { get; set; }

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TrainingTracker.Client.Server.Models; // Będziemy tu importować Twoje modele
+using TrainingTracker.Client.Server.Models;
 
 namespace TrainingTracker.Client.Server.Data
 {

@@ -39,9 +39,9 @@ namespace TrainingTracker.Client.Server.Controllers
         }
 
         [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)] // Zwraca 204 No Content dla udanej aktualizacji
+        [ProducesResponseType(StatusCodes.Status204NoContent)] 
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)] // Zwraca 404 jeśli walidacja nie znajdzie ID
+        [ProducesResponseType(StatusCodes.Status404NotFound)] 
         public async Task<IActionResult> UpdateExercise(int id, [FromBody] UpdateExerciseDto exerciseDto)
         {
             // 1. Tworzymy Command z ID i danymi
@@ -54,8 +54,8 @@ namespace TrainingTracker.Client.Server.Controllers
             return NoContent();
         }
         [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)] // Zwraca 204 No Content dla udanego usunięcia
-        [ProducesResponseType(StatusCodes.Status404NotFound)] // Zwraca 404, jeśli walidacja nie znajdzie ID
+        [ProducesResponseType(StatusCodes.Status204NoContent)] 
+        [ProducesResponseType(StatusCodes.Status404NotFound)] 
         public async Task<IActionResult> DeleteExercise(int id)
         {
             // 1. Tworzymy Command tylko z ID
