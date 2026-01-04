@@ -8,7 +8,8 @@
             public DateTime? CompletedAt { get; set; } 
             public string Notes { get; set; }
 
-            public User User { get; set; }
+        public int TemplateId { get; set; }
+        public User User { get; set; }
             public ICollection<SessionExercise> SessionExercises { get; set; }
         }
 }

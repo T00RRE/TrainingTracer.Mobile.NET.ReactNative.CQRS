@@ -7,42 +7,8 @@ using TrainingTracker.Client.Server.DTOs.Sessions;
 
 namespace TrainingTracker.Client.Server.Features.Sessions
 {
-    // 1. COMMAND (Żądanie): Zwraca ID nowo rozpoczętej sesji
     public record StartTrainingSessionCommand(StartSessionDto Data) : IRequest<int>;
 
-
-    // 2. WALIDATOR: Sprawdza istnienie UserId (klucz obcy)
-    public class StartTrainingSessionValidator : AbstractValidator<StartTrainingSessionCommand>
-    {
-        private readonly ApplicationDbContext _context;
-
-        public StartTrainingSessionValidator(ApplicationDbContext context)
-        {
-            _context = context;
-
-            RuleFor(x => x.Data.UserId)
-                .GreaterThan(0).WithMessage("ID użytkownika jest wymagane.")
-                .MustAsync(UserMustExist).WithMessage("Użytkownik o podanym ID nie istnieje.");
-
-            RuleFor(x => x.Data.TemplateId)
-                .GreaterThan(0).WithMessage("ID szablonu jest wymagane.")
-                .MustAsync(TemplateMustExist).WithMessage("Wybrany szablon treningowy nie istnieje.");
-        }
-
-        // Metoda walidująca klucz obcy
-        private async Task<bool> UserMustExist(StartTrainingSessionCommand command, int userId, CancellationToken token)
-        {
-            if (userId <= 0) return false;
-            return await _context.Users.AnyAsync(u => u.Id == userId, token);
-        }
-        private async Task<bool> TemplateMustExist(StartTrainingSessionCommand command, int templateId, CancellationToken token)
-        {
-            return await _context.WorkoutTemplates.AnyAsync(t => t.Id == templateId, token);
-        }
-    }
-
-
-    // 3. HANDLER (Obsługa Logiki)
     public class StartTrainingSessionHandler : IRequestHandler<StartTrainingSessionCommand, int>
     {
         private readonly ApplicationDbContext _context;
@@ -54,48 +20,55 @@ namespace TrainingTracker.Client.Server.Features.Sessions
 
         public async Task<int> Handle(StartTrainingSessionCommand request, CancellationToken cancellationToken)
         {
-            // 1. Rozpoczynamy transakcję, aby mieć pewność, że sesja i ćwiczenia zapiszą się razem
+            // 1. SZUKAMY AKTYWNEJ SESJI DLA TEGO SAMEGO SZABLONU
+            // Sprawdzamy, czy użytkownik ma sesję, która nie jest zakończona (CompletedAt == null)
+            // i która została utworzona z tego samego szablonu.
+            var existingActiveSession = await _context.TrainingSessions
+                .FirstOrDefaultAsync(s => s.UserId == request.Data.UserId
+                                       && s.TemplateId == request.Data.TemplateId
+                                       && s.CompletedAt == null, cancellationToken);
+
+            if (existingActiveSession != null)
+            {
+                // ZNALAZŁO: Zamiast tworzyć nową, zwracamy ID starej sesji.
+                // Aplikacja mobilna po prostu otworzy ten sam ekran z tymi samymi danymi.
+                return existingActiveSession.Id;
+            }
+
+            // 2. NIE ZNALAZŁO: Tworzymy nową sesję (Twoja stara logika)
             using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
 
             try
             {
-                // 2. Tworzymy nową sesję (nagłówek)
                 var newSession = new TrainingSession
                 {
                     UserId = request.Data.UserId,
+                    TemplateId = request.Data.TemplateId, // Zapisujemy ID szablonu!
                     StartedAt = DateTime.UtcNow,
                     Notes = ""
                 };
 
                 _context.TrainingSessions.Add(newSession);
-                // Musimy zapisać zmiany teraz, aby wygenerować Id dla newSession
                 await _context.SaveChangesAsync(cancellationToken);
 
-                // 3. Pobieramy ćwiczenia z wybranego szablonu
+                // Kopiujemy ćwiczenia z szablonu
                 var templateExercises = await _context.WorkoutTemplates
                     .Where(t => t.Id == request.Data.TemplateId)
-                    .SelectMany(t => t.TemplateExercises) // Zakładając, że masz taką relację w modelu
+                    .SelectMany(t => t.TemplateExercises)
                     .ToListAsync(cancellationToken);
 
-                // Jeśli Twoja struktura bazy nie ma bezpośredniej relacji nawigacyjnej, użyj:
-                // var templateExercises = await _context.TemplateExercises
-                //    .Where(te => te.TemplateId == request.Data.TemplateId)
-                //    .ToListAsync(cancellationToken);
-
-                // 4. Kopiujemy ćwiczenia do nowej sesji
                 foreach (var te in templateExercises)
                 {
                     var sessionExercise = new SessionExercise
                     {
                         SessionId = newSession.Id,
                         ExerciseId = te.ExerciseId,
+                        // OrderPosition = te.OrderPosition // Opcjonalnie, jeśli masz to pole
                     };
                     _context.SessionExercises.Add(sessionExercise);
                 }
 
                 await _context.SaveChangesAsync(cancellationToken);
-
-                // 5. Zatwierdzamy transakcję
                 await transaction.CommitAsync(cancellationToken);
 
                 return newSession.Id;
@@ -108,4 +81,3 @@ namespace TrainingTracker.Client.Server.Features.Sessions
         }
     }
 }
-
