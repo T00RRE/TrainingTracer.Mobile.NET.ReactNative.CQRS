@@ -40,6 +40,7 @@ namespace TrainingTracker.Client.Server.Features.Sessions
                     SessionExerciseId = se.Id,
                     Cwiczenie = se.Exercise.Name,
 
+
                     // Odpowiednik COALESCE(te.DefaultSets, 0)
                     PlanowaneSerie = _context.TemplateExercises
                         .Where(te => te.TemplateId == request.TemplateId && te.ExerciseId == se.ExerciseId)

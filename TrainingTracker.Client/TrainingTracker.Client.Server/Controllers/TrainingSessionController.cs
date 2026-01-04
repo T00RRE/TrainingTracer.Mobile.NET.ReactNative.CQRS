@@ -69,5 +69,18 @@ namespace TrainingTracker.Client.Server.Controllers
 
             return Ok(result);
         }
+        [HttpGet("{sessionId}/details")]
+        public async Task<IActionResult> GetSessionDetails(int sessionId)
+        {
+            // Mediator wyśle zapytanie do handlera, który przed chwilą naprawiliśmy
+            var result = await _mediator.Send(new GetTrainingSessionDetailsQuery { SessionId = sessionId });
+
+            if (result == null)
+            {
+                return NotFound($"Nie znaleziono sesji o ID {sessionId}");
+            }
+
+            return Ok(result);
+        }
     }
 }
