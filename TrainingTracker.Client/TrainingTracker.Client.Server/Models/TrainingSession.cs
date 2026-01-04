@@ -9,6 +9,7 @@
             public string Notes { get; set; }
 
         public int TemplateId { get; set; }
+        public virtual WorkoutTemplate Template { get; set; } = null!;
         public User User { get; set; }
             public ICollection<SessionExercise> SessionExercises { get; set; }
         }

@@ -24,11 +24,13 @@ namespace TrainingTracker.Client.Server.Features.Sessions
         {
             // Pobieanie sesji dla konkretnego UserId
             var sessions = await _context.TrainingSessions
+                .Include(s => s.Template)
                 .Where(s => s.UserId == request.UserId)
                 .OrderByDescending(s => s.StartedAt) // Najnowsze na górze
                 .Select(s => new SessionDto
                 {
                     Id = s.Id,
+                    TemplateName = s.Template != null ? s.Template.Name : "Trening własny",
                     UserId = s.UserId,
                     StartedAt = s.StartedAt,
                     CompletedAt = s.CompletedAt,
