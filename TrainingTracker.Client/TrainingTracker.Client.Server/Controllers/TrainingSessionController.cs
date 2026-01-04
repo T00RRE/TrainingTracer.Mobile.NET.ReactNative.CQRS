@@ -56,5 +56,18 @@ namespace TrainingTracker.Client.Server.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("{sessionId}/details/{templateId}")]
+        [ProducesResponseType(typeof(WorkoutSessionDetailsDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetSessionDetails(int sessionId, int templateId)
+        {
+            var query = new GetWorkoutSessionDetailsQuery(sessionId, templateId);
+            var result = await _mediator.Send(query);
+
+            if (result == null) return NotFound();
+
+            return Ok(result);
+        }
     }
 }

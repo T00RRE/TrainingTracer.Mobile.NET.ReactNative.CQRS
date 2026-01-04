@@ -54,10 +54,10 @@ namespace TrainingTracker.Client.Server.Features.Sessions
             }
 
             // Zakończenie sesji (jeśli EndSession jest true i sesja nie jest jeszcze zakończona)
-            if (request.Data.EndSession && sessionToUpdate.CompletedAt == null)
-            {
+            //if (request.Data.EndSession && sessionToUpdate.CompletedAt == null)
+            //{
                 sessionToUpdate.CompletedAt = DateTime.UtcNow;
-            }
+            //}
             // Jeśli CompletedAt jest już ustawione, a EndSession jest true, to po prostu ignorujemy, 
             // zakładając, że to nie jest błąd, tylko ponowna próba zakończenia.
 

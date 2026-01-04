@@ -50,5 +50,14 @@ namespace TrainingTracker.Client.Server.Controllers
 
             return NoContent();
         }
+        [HttpPost("create-new")]
+        public async Task<ActionResult<int>> CreateAndAdd([FromBody] CreateAndAddExerciseDto dto)
+        {
+            // Wysyłamy nasze DTO do MediatR, który znajdzie odpowiedni Handler
+            var result = await _mediator.Send(new CreateAndAddExerciseCommand(dto));
+
+            // Zwracamy status 200 (OK) i ID nowo utworzonego powiązania
+            return Ok(result);
+        }
     }
 }

@@ -18,7 +18,7 @@ namespace TrainingTracker.Client.Server // TUTAJ U¯YWAMY POPRAWNEJ NAZWY PRZESTR
                 options.AddPolicy(name: "AllowFrontend",
                     policy =>
                     {
-                        policy.WithOrigins("http://localhost:5173", "https://localhost:5173") // ZEZWÓL na domenê klienta
+                        policy.WithOrigins("http://localhost:5173", "https://localhost:5173", "http://10.0.2.2:5120") // ZEZWÓL na domenê klienta
                               .AllowAnyHeader() // Zezwól na wszystkie nag³ówki (Content-Type, itp.)
                               .AllowAnyMethod(); // Zezwól na wszystkie metody (GET, POST, PUT, DELETE)
                     });
@@ -48,7 +48,7 @@ namespace TrainingTracker.Client.Server // TUTAJ U¯YWAMY POPRAWNEJ NAZWY PRZESTR
 
 
             app.UseCors("AllowFrontend");
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseAuthorization();
             app.MapControllers();
 
