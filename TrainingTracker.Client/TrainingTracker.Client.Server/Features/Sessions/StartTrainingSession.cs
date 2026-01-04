@@ -23,6 +23,10 @@ namespace TrainingTracker.Client.Server.Features.Sessions
             RuleFor(x => x.Data.UserId)
                 .GreaterThan(0).WithMessage("ID użytkownika jest wymagane.")
                 .MustAsync(UserMustExist).WithMessage("Użytkownik o podanym ID nie istnieje.");
+
+            RuleFor(x => x.Data.TemplateId)
+                .GreaterThan(0).WithMessage("ID szablonu jest wymagane.")
+                .MustAsync(TemplateMustExist).WithMessage("Wybrany szablon treningowy nie istnieje.");
         }
 
         // Metoda walidująca klucz obcy
@@ -30,6 +34,10 @@ namespace TrainingTracker.Client.Server.Features.Sessions
         {
             if (userId <= 0) return false;
             return await _context.Users.AnyAsync(u => u.Id == userId, token);
+        }
+        private async Task<bool> TemplateMustExist(StartTrainingSessionCommand command, int templateId, CancellationToken token)
+        {
+            return await _context.WorkoutTemplates.AnyAsync(t => t.Id == templateId, token);
         }
     }
 
@@ -46,18 +54,58 @@ namespace TrainingTracker.Client.Server.Features.Sessions
 
         public async Task<int> Handle(StartTrainingSessionCommand request, CancellationToken cancellationToken)
         {
-            var newSession = new TrainingSession
+            // 1. Rozpoczynamy transakcję, aby mieć pewność, że sesja i ćwiczenia zapiszą się razem
+            using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+
+            try
             {
-                UserId = request.Data.UserId,
-                StartedAt = DateTime.UtcNow,
-                Notes = "" // Domyślna wartość
-                // CompletedAt jest domyślnie NULL (sesja trwa)
-            };
+                // 2. Tworzymy nową sesję (nagłówek)
+                var newSession = new TrainingSession
+                {
+                    UserId = request.Data.UserId,
+                    StartedAt = DateTime.UtcNow,
+                    Notes = ""
+                };
 
-            _context.TrainingSessions.Add(newSession);
-            await _context.SaveChangesAsync(cancellationToken);
+                _context.TrainingSessions.Add(newSession);
+                // Musimy zapisać zmiany teraz, aby wygenerować Id dla newSession
+                await _context.SaveChangesAsync(cancellationToken);
 
-            return newSession.Id;
+                // 3. Pobieramy ćwiczenia z wybranego szablonu
+                var templateExercises = await _context.WorkoutTemplates
+                    .Where(t => t.Id == request.Data.TemplateId)
+                    .SelectMany(t => t.TemplateExercises) // Zakładając, że masz taką relację w modelu
+                    .ToListAsync(cancellationToken);
+
+                // Jeśli Twoja struktura bazy nie ma bezpośredniej relacji nawigacyjnej, użyj:
+                // var templateExercises = await _context.TemplateExercises
+                //    .Where(te => te.TemplateId == request.Data.TemplateId)
+                //    .ToListAsync(cancellationToken);
+
+                // 4. Kopiujemy ćwiczenia do nowej sesji
+                foreach (var te in templateExercises)
+                {
+                    var sessionExercise = new SessionExercise
+                    {
+                        SessionId = newSession.Id,
+                        ExerciseId = te.ExerciseId,
+                    };
+                    _context.SessionExercises.Add(sessionExercise);
+                }
+
+                await _context.SaveChangesAsync(cancellationToken);
+
+                // 5. Zatwierdzamy transakcję
+                await transaction.CommitAsync(cancellationToken);
+
+                return newSession.Id;
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                throw;
+            }
         }
     }
 }
+
