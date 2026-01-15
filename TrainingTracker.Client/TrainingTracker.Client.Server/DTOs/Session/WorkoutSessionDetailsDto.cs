@@ -13,6 +13,8 @@
         public string Cwiczenie { get; set; }
         public int PlanowaneSerie { get; set; }
         public int WykonaneSerie { get; set; }
+
+        public string? Opis { get; set; }
         public double? OstatniCiezar { get; set; } // double, bo taki typ masz w SetDto.cs
     }
 }

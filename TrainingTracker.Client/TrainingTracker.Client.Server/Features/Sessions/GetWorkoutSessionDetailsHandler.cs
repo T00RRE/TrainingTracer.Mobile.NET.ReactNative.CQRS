@@ -40,6 +40,7 @@ namespace TrainingTracker.Client.Server.Features.Sessions
                     SessionExerciseId = se.Id,
                     Cwiczenie = se.Exercise.Name,
 
+                    Opis = se.Exercise.Description,
 
                     // Odpowiednik COALESCE(te.DefaultSets, 0)
                     PlanowaneSerie = _context.TemplateExercises

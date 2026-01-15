@@ -63,5 +63,20 @@ namespace TrainingTracker.Client.Server.Controllers
 
             return NoContent();
         }
+        [HttpPost("{id}/add-credits/{amount}")]
+        [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> AddCredits(int id, int amount)
+        {
+            var command = new AddUserCreditsCommand(id, amount);
+            var newBalance = await _mediator.Send(command);
+
+            if (newBalance == -1)
+            {
+                return NotFound("Nie znaleziono użytkownika.");
+            }
+
+            return Ok(newBalance);
+        }
     }
 }

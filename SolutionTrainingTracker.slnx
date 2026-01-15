@@ -1,7 +1,8 @@
 <Solution>
-  <Project Path="TrainingTracker.Client/trainingtracker.client.client/trainingtracker.client.client.esproj">
+  <Project Path="../../../../../../Desktop/Inżynier/SolutionTrainingTracker/TrainingTracker.Client/trainingtracker.client.client/trainingtracker.client.client.esproj">
     <Build />
     <Deploy />
   </Project>
-  <Project Path="TrainingTracker.Client/TrainingTracker.Client.Server/TrainingTracker.Client.Server.csproj" />
+  <Project Path="../../../../../../Desktop/Inżynier/SolutionTrainingTracker/TrainingTracker.Client/TrainingTracker.Client.Server/TrainingTracker.Client.Server.csproj" />
+  <Project Path="../../../../../../Desktop/Inżynier/SolutionTrainingTracker/TrainingTracker.Web/TrainingTracker.Web.csproj" Id="3d934315-2b81-4f5f-9b04-d4975e542106" />
 </Solution>
